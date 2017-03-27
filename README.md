@@ -1,5 +1,8 @@
 Games for the AttinyArcade (or hardware inspired by this system)
+================================================================
+
 By Andy Jackson - Twitter: @andyhighnumber
+==========================================
 
 The games in this folder can mostly be played either on the AttinyArcade, or similar hardware (if the hardware is different, there will be a circuit diagram in the same folder as the game).
 
