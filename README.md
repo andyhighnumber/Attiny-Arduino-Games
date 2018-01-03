@@ -20,12 +20,13 @@ For the standard Attiny Arcade Hardware
 - UFO_Breakout_Arduino: Again - two games in one sketch, both from www.webboggles.com, UFO and Breakout
 - BatBonanzaAttinyArcade: A version of Pong for the standard AttinyHardware - not as playable because you really need analog control for this type of game - see below
 
+For the standard Attiny Arcade Hardware, or enhanced functionality on custom hardware
+=====================================================================================
+- SpaceAttackAttiny: Space Invaders clone for the original Attiny (also allows for modified version of hardware with fire button - see circuit diagram in folder)
+- Frogger_Attiny_Arcade: Frogger clone for the original Attiny (also allows modified version of hardware with jump button - same hardware config as SpaceAttack above - see schematic in folder)
+
 For custom hardware - see circuit schematics in the folders with the sketches
 =============================================================================
 - BatBonanzaAnalog: Pong clone based on custom hardware with analog controls (will work on the same hardware as Space Attack Anlog Version).
 - Space_Attack_Analog: Space Invaders clone (sort of) based on custom hardware with analog control (will work on the same hardware as Bat Bonanza Anlog Version).
 - BatBonanzaAnalogSinglePot: Pong clone based on custom hardware with single-pot analog control (will work on the same hardware as Space Attack Anlog Version).
-
-For the standard Attiny Arcade Hardware, or enhanced functionality on custom hardware
-=====================================================================================
-- SpaceAttackAttiny: Space Invaders clone for the original Attiny (also allows for modified version of hardware with fire button - see circuit diagram in folder)
