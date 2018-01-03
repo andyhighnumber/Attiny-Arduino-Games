@@ -8,7 +8,7 @@ The games in this folder can mostly be played either on the AttinyArcade, or sim
 
 See www.webboggles.com for details of the AttinyArcade hardware.
 
-These are based on the Attiny85 device running at 8Mhz on its internal clock (don't forget to burn the bootloader when you first flash a new chip- the option to do this is in the "Tools" menu on the Arduino IDE.
+These are based on the Attiny85 device running at 8Mhz on its internal clock (don't forget to burn the bootloader when you first flash a new chip- the option to do this is in the "Tools" menu on the Arduino IDE).
 
 In this folder:
 
