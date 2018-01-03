@@ -30,3 +30,4 @@ For custom hardware - see circuit schematics in the folders with the sketches
 - BatBonanzaAnalog: Pong clone based on custom hardware with analog controls (will work on the same hardware as Space Attack Anlog Version).
 - Space_Attack_Analog: Space Invaders clone (sort of) based on custom hardware with analog control (will work on the same hardware as Bat Bonanza Anlog Version).
 - BatBonanzaAnalogSinglePot: Pong clone based on custom hardware with single-pot analog control (will work on the same hardware as Space Attack Anlog Version).
+- Tetris_Multi_Button: A Tetris cline, as above but designed for multi-button pad (see circuit schematic in folder for details of the hardware)
