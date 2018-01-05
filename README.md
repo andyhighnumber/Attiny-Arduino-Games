@@ -19,6 +19,7 @@ For the standard Attiny Arcade Hardware
 - UFO_Stacker_Attiny: Two games in one sketch - UFO (from www.webboggles.com) and Stacker (from me).
 - UFO_Breakout_Arduino: Again - two games in one sketch, both from www.webboggles.com, UFO and Breakout
 - BatBonanzaAttinyArcade: A version of Pong for the standard AttinyHardware - not as playable because you really need analog control for this type of game - see below
+- MorseAttinyArcade: A morse code decoder (for practicing morse, if you so wish), which displays inputted code via a 5-line scrolling display. When combined with a PLL (or similar) tone detection circuit, this could easily decode off-air morse.
 
 For the standard Attiny Arcade Hardware, or enhanced functionality on custom hardware
 =====================================================================================
