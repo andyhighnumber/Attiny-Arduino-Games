@@ -12,6 +12,12 @@ These are based on the Attiny85 device running at 8Mhz on its internal clock (do
 
 In this folder:
 
+For the standard Attiny Arcade Hardware, or enhanced functionality on custom hardware
+=====================================================================================
+- SpaceAttackAttiny: Space Invaders clone for the original Attiny (also allows for modified version of hardware with fire button - see circuit diagram in folder)
+- Frogger_Attiny_Arcade: Frogger clone for the original Attiny (also allows modified version of hardware with jump button - same hardware config as SpaceAttack above - see schematic in folder)
+- MorseAttinyArcade: A morse code decoder (for practicing morse, if you so wish), which displays inputted code via a 5-line scrolling display. When combined with a PLL (or similar) tone detection circuit, this could easily decode off-air morse.
+
 For the standard Attiny Arcade Hardware
 =======================================
 - WrenRollercoasterAttinyArcade: Inspired by the TinyWings iOS game - fly a wren along a landscape as far as you can! 
@@ -19,12 +25,6 @@ For the standard Attiny Arcade Hardware
 - UFO_Stacker_Attiny: Two games in one sketch - UFO (from www.webboggles.com) and Stacker (from me).
 - UFO_Breakout_Arduino: Again - two games in one sketch, both from www.webboggles.com, UFO and Breakout
 - BatBonanzaAttinyArcade: A version of Pong for the standard AttinyHardware - not as playable because you really need analog control for this type of game - see below
-- MorseAttinyArcade: A morse code decoder (for practicing morse, if you so wish), which displays inputted code via a 5-line scrolling display. When combined with a PLL (or similar) tone detection circuit, this could easily decode off-air morse.
-
-For the standard Attiny Arcade Hardware, or enhanced functionality on custom hardware
-=====================================================================================
-- SpaceAttackAttiny: Space Invaders clone for the original Attiny (also allows for modified version of hardware with fire button - see circuit diagram in folder)
-- Frogger_Attiny_Arcade: Frogger clone for the original Attiny (also allows modified version of hardware with jump button - same hardware config as SpaceAttack above - see schematic in folder)
 
 For custom hardware - see circuit schematics in the folders with the sketches
 =============================================================================
