@@ -953,7 +953,7 @@ void levelUp() {
 
 void displayTitle(void) {
   int incr = 0;
-  for(int lxn = 1; lxn < 4; lxn++) {
+  for(int lxn = 3; lxn < 6; lxn++) {
     ssd1306_setpos(86,lxn); 
     ssd1306_send_data_start();
     for(int lxn2 = 0; lxn2 < 35; lxn2++) {
