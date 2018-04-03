@@ -678,8 +678,8 @@ void displayScreen(void) {
       }
       
       if (pacY == 51) {
-        if (pacX < 14 && bigPillsActive[0] == 1) {bigPillsActive[0] = 0; powerUp = 1;}
-        if (pacX > 111 && bigPillsActive[1] == 1){bigPillsActive[1] = 0; powerUp = 1;}
+        if (pacX < 14 && bigPillsActive[0] == 1) {bigPillsActive[0] = 0; powerUp = 1; powerCounter = 0;}
+        if (pacX > 111 && bigPillsActive[1] == 1){bigPillsActive[1] = 0; powerUp = 1; powerCounter = 0;}
       }
       
       ssd1306_send_byte(out);
