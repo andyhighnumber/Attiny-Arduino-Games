@@ -58,7 +58,7 @@
 #define GHOST_DELAY_MINIMUM 50
 
 // How long does powerUp mode last?
-#define POWER_LENGTH 150
+#define POWER_LENGTH 200
 
 #define DIGITAL_WRITE_HIGH(PORT) PORTB |= (1 << PORT)
 #define DIGITAL_WRITE_LOW(PORT) PORTB &= ~(1 << PORT)
@@ -635,7 +635,7 @@ void displayScreen(void) {
         break;
         case 2:
           startP = 13;
-          stopP = 20;
+          stopP = 21;
         break;
         case 3:
           startP = 21;
