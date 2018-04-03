@@ -976,7 +976,7 @@ void playPacman(){
 
   while(lives >= 0) {
     
-    if (pillsEaten >= 63) levelUp();
+    if (pillsEaten >= 64) levelUp();
 
     moveGhosts();
     
