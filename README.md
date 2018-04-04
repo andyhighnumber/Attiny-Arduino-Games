@@ -14,6 +14,7 @@ In this folder:
 
 For the standard Attiny Arcade Hardware, or enhanced functionality on custom hardware
 =====================================================================================
+- Pacman_Attiny_Arcade: PacMan clone for the original Attiny. This is the best of the lot in my opinion. Unlike the other games here, this needs to be flashed with a 16Mhz internal clock bootloader (all the others are 8MHz). Send me a message via twitter if this presents any problems.
 - SpaceAttackAttiny: Space Invaders clone for the original Attiny (also allows for modified version of hardware with fire button - see circuit diagram in folder)
 - Frogger_Attiny_Arcade: Frogger clone for the original Attiny (also allows modified version of hardware with jump button - same hardware config as SpaceAttack above - see schematic in folder)
 - MorseAttinyArcade: A morse code decoder (for practicing morse, if you so wish), which displays inputted code via a 5-line scrolling display. When combined with a PLL (or similar) tone detection circuit, this could easily decode off-air morse.
