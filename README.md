@@ -6,6 +6,8 @@ By Andy Jackson - Twitter: @andyhighnumber
 
 The games in this folder can mostly be played either on the AttinyArcade, or similar hardware (if the hardware is different, there will be a circuit diagram in the same folder as the game).
 
+Info on programming the Attiny85 chip can be found online, here's an example: https://create.arduino.cc/projecthub/arjun/programming-attiny85-with-arduino-uno-afb829 - don't forget to burn the bootloader (it's a menu option under 'Tools' on the Arduino IDE) the first time you flash the chip and if you need to change between 8Mhz and 16Mhz clocks (all my games are 8Mhz, except Pacman which is 16Mhz).
+
 See www.webboggles.com for details of the AttinyArcade hardware.
 
 These are based on the Attiny85 device running at 8Mhz on its internal clock (don't forget to burn the bootloader when you first flash a new chip- the option to do this is in the "Tools" menu on the Arduino IDE).
