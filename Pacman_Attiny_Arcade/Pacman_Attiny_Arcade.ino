@@ -4,6 +4,9 @@
  *  Inspired by http://webboggles.com/ and includes some code from the #AttinyArcade games on that site
  *  The code that does not fall under the licenses of sources listed below can be used non commercially with attribution.
  *  This software is supplied without warranty of any kind.
+ *
+ *  The PAC-MAN screen layout used in this version was inspired by another PAC-MAN clone on the Attiny85, which can be found, along 
+ *  with several other awesome games, here: https://sites.google.com/view/arduino-collection
  *  
  *  **** BEFORE USE, BURN THE BOOTLOADER ON THE ATTINY85 WITH 16Mhz Internal Clock *  
  *  
