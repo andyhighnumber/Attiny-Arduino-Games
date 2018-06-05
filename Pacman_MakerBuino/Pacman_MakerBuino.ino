@@ -425,7 +425,7 @@ void levelUp() {
 
   screenLeft = 0;
 
-  lcdDisplay_char_f6x8(0, 3, "LEVEL:");
+  lcdDisplay_char_f6x8(0, 3, " LEVEL:");
   doNumber(37, 3, level);
   showScore();
   gb.display.update();
