@@ -345,7 +345,7 @@ void displayOpenScreen(int incr) {
     
     lcdDisplay_char_f6x8(0, 1, "P A C-M A N");
     lcdDisplay_char_f6x8(0, 3, "andy jackson");
-    lcdDisplay_char_f6x8(64, 5, "Press A ..");
+    lcdDisplay_char_f6x8(64, 5, "Press A...");
 
     lcdDisplay_setpos(0, 0);
     for (int incr2 = 0; incr2 < 76; incr2++) {
@@ -365,18 +365,21 @@ void loop() {
   lcdDisplay_fillscreen(1);
   gb.display.update();
 
-  while(gb.buttons.pressed(BTN_A) == true) { gb.update(); delay(5);}
+  while(gb.buttons.pressed(BTN_A) == true) { while(!gb.update()); delay(5);}
+
+  gb.sound.playNote(63,1,0);
+  while(!gb.update());
   
   screenLeft = 0;
-  for (int incr = 0; incr < 44 ; incr+=3) {
+  for (int incr = 0; incr < 42 ; incr+=3) {
     displayOpenScreen(incr);
     gb.display.update();
-    if (incr == 0) delay(1200);
+    if (incr == 0) delay(1700);
   }
 
   while(gb.buttons.pressed(BTN_A) == false) {
     displayOpenScreen(100);    
-    gb.update();
+    while(!gb.update());
   }
 
   lcdDisplay_fillscreen(1);
@@ -758,7 +761,6 @@ void eatenGhost(void) {
   for (int i = 700; i>200; i = i - 50){
     beep(30,i);
   }
-  //gb.sound.playOK();
 }
 
 byte hitGhosts(void) {
@@ -804,7 +806,7 @@ void pacDie(void) {
 void movePacman(void) {
   count++;
   if (count == 2) {
-    if (mouth == 0) {mouth = 1; beep(20,400+(powerUp*100));} else {mouth = 0; beep(20,420);}
+    if (mouth == 0) {mouth = 1; beep(20,600-(powerUp*200));} else {mouth = 0; beep(20,620);}
     count = 0;
   }
 
