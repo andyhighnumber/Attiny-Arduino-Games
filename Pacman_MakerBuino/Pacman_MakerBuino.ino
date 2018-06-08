@@ -377,14 +377,28 @@ void loop() {
     if (incr == 0) delay(1700);
   }
 
-  while(gb.buttons.pressed(BTN_A) == false) {
+  while(gb.buttons.pressed(BTN_A) == false && gb.buttons.pressed(BTN_B) == false ) {
     displayOpenScreen(100);    
     while(!gb.update());
   }
 
+
   lcdDisplay_fillscreen(1);
   int sChange = 0;
 
+  screenLeft = 0;
+  
+  if (gb.buttons.pressed(BTN_B) == true) {
+      sChange = 1;     
+      EEPROM.write(0,0);
+      EEPROM.write(1,0);
+      lcdDisplay_char_f6x8(0, 0, "--------------");
+      lcdDisplay_char_f6x8(0, 1, "HI SCORE RESET");
+      lcdDisplay_char_f6x8(0, 3, "--------------");
+      while(!gb.update());
+      delay(2000);
+  }
+  
   if (sChange == 0) {
 
     lcdDisplay_fillscreen(1);
@@ -806,7 +820,7 @@ void pacDie(void) {
 void movePacman(void) {
   count++;
   if (count == 2) {
-    if (mouth == 0) {mouth = 1; beep(20,600-(powerUp*200));} else {mouth = 0; beep(20,620);}
+    if (mouth == 0) {mouth = 1; beep(4,850-powerUp*200);beep(5,720-powerUp*200);beep(4,620-powerUp*200);beep(5,570-powerUp*200);} else {mouth = 0; beep(5,570);beep(4,620);beep(5,720);beep(4,850);}
     count = 0;
   }
 
