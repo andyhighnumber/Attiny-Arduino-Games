@@ -158,6 +158,7 @@ void lcdDisplay_char_f6x8(uint8_t x, uint8_t y, const char ch[]);
 
 // Other generic functions for games (both originated in code from webboggles.com)
 void doNumber (int, int, int);
+void beep(int,int);
 
 // Game functions
 void playPacman(void);
@@ -304,15 +305,28 @@ static const byte gameScreen[] PROGMEM = {
   0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x27, 0x20, 0x1F, 0x00
 };
 
+void beep(int bCount,int bDelay){
+  if (mute) return;
+  for (int i = 0; i<=bCount; i++){
+    digitalWrite(3,HIGH);
+    for(int i2=0; i2<bDelay; i2++){
+      __asm__("nop\n\t"); // 62.5ns delay @ 16MHz
+      }
+    digitalWrite(3,LOW);
+    for(int i2=0; i2<bDelay; i2++) {
+      __asm__("nop\n\t"); // 62.5ns delay @ 16Mhz
+    }
+  }
+}
 
 void displayTitle(void) {
   int incr = 0;
-  for (int lxn = 2; lxn < 5; lxn++) {
+  for (int lxn = 1; lxn < 4; lxn++) {
     lcdDisplay_setpos(84, lxn);
     for (int lxn2 = 0; lxn2 < 34; lxn2++) {
       lcdDisplay_send_byte(pgm_read_byte(&openBmp[incr]));
       incr++;
-      if ( (lxn == 2 || lxn == 4) && lxn2 > 21) lxn2 = 35;
+      if ( (lxn == 1 || lxn == 3) && lxn2 > 21) lxn2 = 35;
     }
   }
 }
@@ -325,24 +339,13 @@ void setup() {
   gb.titleScreen(F("PAC-MAN"));
 }
 
-// Arduino stuff - loop
-void loop() {
-  lcdDisplay_fillscreen(1);
-  gb.display.update();
-
-  while(gb.buttons.pressed(BTN_A) == true) { gb.update(); delay(5);}
-  
-  while(gb.buttons.pressed(BTN_A) == false) {
-    lcdDisplay_char_f6x8(0, 1, "Press A ....");
-    gb.update();
-  }
-
-  screenLeft = 0;
-  for (int incr = 0; incr < 44 ; incr+=3) {
-    screenLeft = incr;
+void displayOpenScreen(int incr) {
+    lcdDisplay_fillscreen(1);
+    if (incr < 99) screenLeft = incr;
     
     lcdDisplay_char_f6x8(0, 1, "P A C-M A N");
     lcdDisplay_char_f6x8(0, 3, "andy jackson");
+    lcdDisplay_char_f6x8(64, 5, "Press A ..");
 
     lcdDisplay_setpos(0, 0);
     for (int incr2 = 0; incr2 < 76; incr2++) {
@@ -355,16 +358,31 @@ void loop() {
     }
 
     displayTitle();
-    gb.display.update();
+}
 
+// Arduino stuff - loop
+void loop() {
+  lcdDisplay_fillscreen(1);
+  gb.display.update();
+
+  while(gb.buttons.pressed(BTN_A) == true) { gb.update(); delay(5);}
+  
+  screenLeft = 0;
+  for (int incr = 0; incr < 44 ; incr+=3) {
+    displayOpenScreen(incr);
+    gb.display.update();
     if (incr == 0) delay(1200);
-    lcdDisplay_fillscreen(1);
   }
 
+  while(gb.buttons.pressed(BTN_A) == false) {
+    displayOpenScreen(100);    
+    gb.update();
+  }
+
+  lcdDisplay_fillscreen(1);
   int sChange = 0;
 
   if (sChange == 0) {
-    delay(1000);
 
     lcdDisplay_fillscreen(1);
 
@@ -386,29 +404,31 @@ void loop() {
 
     lcdDisplay_fillscreen(0x00);
     lcdDisplay_char_f6x8(0, 0, "------------");
-    lcdDisplay_char_f6x8(0, 1, " GAME  OVER");
+    lcdDisplay_char_f6x8(0, 1, "GAME  OVER");
     lcdDisplay_char_f6x8(0, 3, "------------");
     showScore();
+    while(!gb.update());
+    delay(2500);
+    lcdDisplay_fillscreen(0x00);
+    lcdDisplay_char_f6x8(0, 0, "---------------");
+    lcdDisplay_char_f6x8(0, 3, "---------------");
+    doNumber(24, 2, topScore);
     if (!newHigh) {
-      lcdDisplay_char_f6x8(21, 7, "HIGH SCORE:");
-      doNumber(88, 7, topScore);
+      lcdDisplay_char_f6x8(0, 1, "HIGH SCORE:");
+    } else {
+      lcdDisplay_char_f6x8(0, 1, "NEW HIGH:");
+      for (int i = 700; i>200; i = i - 50){
+        beep(30,i);
+      }
     }
-    gb.display.update();
-    delay(1500);
-    if (newHigh) {
-      lcdDisplay_fillscreen(0x00);
-      lcdDisplay_char_f6x8(0, 0, "------------");
-      lcdDisplay_char_f6x8(0, 1, " NEW HIGH ");
-      lcdDisplay_char_f6x8(0, 3, "------------");
-      doNumber(50, 5, topScore);
-      gb.display.update();
-      delay(1500);
-    }
+    while(!gb.update());
+    delay(2500);
   }
+  
 }
 
 void showScore(void) {
-  lcdDisplay_char_f6x8(0, 2, " SCORE:");
+  lcdDisplay_char_f6x8(0, 2, "SCORE:");
   doNumber(44, 2, score);
 }
 
@@ -424,7 +444,7 @@ void levelUp() {
 
   screenLeft = 0;
 
-  lcdDisplay_char_f6x8(0, 3, " LEVEL:");
+  lcdDisplay_char_f6x8(0, 3, "LEVEL:");
   doNumber(44, 3, level);
   showScore();
   gb.display.update();
@@ -735,7 +755,10 @@ void newDirection(byte ghostNo) {
 }
 
 void eatenGhost(void) {
-  gb.sound.playOK();
+  for (int i = 700; i>200; i = i - 50){
+    beep(30,i);
+  }
+  //gb.sound.playOK();
 }
 
 byte hitGhosts(void) {
@@ -761,14 +784,17 @@ void pacDie(void) {
   directions[3] = DIR_UP;
   mouth = 1;
   displayScreen();
-  gb.sound.playCancel();
+  for (i = 0; i<500; i = i+ 50){  
+    beep(50,i);
+  }
   while(!gb.update());
   displayScreen();
   while(!gb.update());
-  delay(300);
   mouth = 0;
   displayScreen();
-  gb.sound.playCancel();
+  for (i = 500; i<1000; i = i+ 50){  
+    beep(50,i);
+  }
   while(!gb.update());
   displayScreen();
   delay(500);
@@ -778,13 +804,7 @@ void pacDie(void) {
 void movePacman(void) {
   count++;
   if (count == 2) {
-    if (mouth == 0) {
-      mouth = 1;
-      gb.sound.playTick();
-    } else {
-      mouth = 0;
-      gb.sound.playTick();
-    }
+    if (mouth == 0) {mouth = 1; beep(20,400+(powerUp*100));} else {mouth = 0; beep(20,420);}
     count = 0;
   }
 
@@ -882,7 +902,6 @@ void movePacman(void) {
 }
 
 void initLevel(void) {
-  //clickLock = 0;
   pillsEaten = 0;
   stopAnimate = 0;
 
@@ -892,10 +911,6 @@ void initLevel(void) {
 }
 
 void initScreen(void) {
-
-  gb.sound.playNote(63,1,0);
-  while(!gb.update());
-  
   powerUp = 0;
   powerCounter = 0;
   ghostsActive[0] = 0;
