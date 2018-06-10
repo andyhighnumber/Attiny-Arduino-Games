@@ -41,7 +41,7 @@ Gamebuino gb;
 
 
 // Uncomment this #define to make the logs smaller (/thinner)
-#define SMALLLOGS
+//#define SMALLLOGS
 
 // Make click delay an even number - it gets halved and then used in an integer comparison
 #define CLICKDELAY 120 
