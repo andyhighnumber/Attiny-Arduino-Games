@@ -342,7 +342,7 @@ void lcdDisplay_send_byte(uint8_t input) {
 
   disp = gb.display.getBuffer();
 
-  if ( (currentX >= screenLeft) && (currentX <= screenLeft + 84) && (currentY >= screenTop) && (currentY <= screenTop + 5)) {
+  if ( (currentX >= screenLeft) && (currentX < screenLeft + 84) && (currentY >= screenTop) && (currentY <= screenTop + 5)) {
     *(disp + currentX - screenLeft + ((currentY - screenTop) * 84)) = input;
   }
   currentX++;
