@@ -29,6 +29,11 @@ For the standard Attiny Arcade Hardware
 - UFO_Breakout_Arduino: Again - two games in one sketch, both from www.webboggles.com, UFO and Breakout
 - BatBonanzaAttinyArcade: A version of Pong for the standard AttinyHardware - not as playable because you really need analog control for this type of game - see below
 
+For the MAKERbuino (https://www.makerbuino.com/)
+=======================================
+- PAK-MAN_MAKERbuino: Port of the PAC-MAN AttinyArcade game to the MAKERBUINO / GAMEBUINO platform 
+- FROGGER_MAKERbuino: Port of the Frogger AttinyArcade game to the MAKERBUINO / GAMEBUINO platform 
+
 For custom hardware - see circuit schematics in the folders with the sketches
 =============================================================================
 - BatBonanzaAnalog: Pong clone based on custom hardware with analog controls (will work on the same hardware as Space Attack Anlog Version).
