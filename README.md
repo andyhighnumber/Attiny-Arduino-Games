@@ -10,7 +10,7 @@ Info on programming the Attiny85 chip can be found online, here's an example: ht
 
 See www.webboggles.com for details of the AttinyArcade hardware.
 
-These are based on the Attiny85 device running at 8Mhz on its internal clock (don't forget to burn the bootloader when you first flash a new chip- the option to do this is in the "Tools" menu on the Arduino IDE).
+These games are based on the Attiny85 device running at 8Mhz on its internal clock, or 16Mhz for pac-man (don't forget to burn the bootloader when you first flash a new chip- the option to do this is in the "Tools" menu on the Arduino IDE).
 
 In this folder:
 
