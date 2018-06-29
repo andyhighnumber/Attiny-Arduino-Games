@@ -588,7 +588,7 @@ void playFrogger(){
     // Handle 'move back' button press
     if (moveBack == 1) {
       moveBack = 0;
-      score-= level;          // decrement the score for every move back
+      if (frogRow < 7) score-= level;          // decrement the score for every move back
       if (frogRow < 7) {
         // Correct for the skew in frog position created by the blockShift scrolling parameter
         if (frogRow == 3 && blockShiftL < 4) frogColumn++;
