@@ -120,13 +120,13 @@ int screenTop = 0;        // Current top of the displayed screen
 byte currentX = 0;        // Current X positon to draw
 byte currentY = 0;        // Current Y positon to draw
 
-
 // Bitmaps created by @senkunmusahi using https://www.riyas.org/2013/12/online-led-matrix-font-generator-with.html
-static const byte  bitmaps[15][8] PROGMEM = {
+static const byte  bitmaps[16][8] PROGMEM = {
 // Frogs
   {0x83, 0xDC, 0x7A, 0x3F, 0x3F, 0x7A, 0xDC, 0x83},
   {0x99, 0xBD, 0xDB, 0x7E, 0x7E, 0x3C, 0xE7, 0x81},
   {0x81, 0xE7, 0x3C, 0x7E, 0x7E, 0xDB, 0xBD, 0x99},
+  {0xC1, 0x3B, 0x5E, 0xFC, 0xFC, 0x5E, 0x3B, 0xC1},
 
 #ifdef SMALLLOGS
 // Small logs
@@ -472,6 +472,13 @@ void playFrogger(){
     drawGameScreen(frogMode);
     drawDocks();
     
+  
+    if (frogColumn*8 < screenLeft + 40) screenLeft--;
+    if (frogColumn*8 > screenLeft + 50) screenLeft++;
+    if (frogColumn*8 < screenLeft + 15) screenLeft--;
+    if (frogColumn*8 > screenLeft + 60) screenLeft++;
+
+    /*
     if (frogRow == 1 || frogRow == 3) {
       screenLeft = frogColumn*8 - 30 - blockShiftL;
     } else if (frogRow == 2) {
@@ -479,6 +486,7 @@ void playFrogger(){
     } else {
       screenLeft = frogColumn*8 - 30;
     }
+    */
     
     screenTop =  frogRow - 3;
 
@@ -529,14 +537,12 @@ void playFrogger(){
       clickBase = millis();
     }
 
-    /* DISABLE THIS FOR NOW
     if (gb.buttons.pressed(BTN_DOWN) == true && clickLock == 0) {
       moveBack = 1;
       watchDog = 0;   // reset the watchdog so the game doesn't end!
       clickLock = 1;
       clickBase = millis();
     }
-    */
 
     if (gb.buttons.pressed(BTN_LEFT) == true && clickLock == 0) {
       moveLeft = 1;
@@ -579,16 +585,17 @@ void playFrogger(){
     }
 
 
-    // Handle 'move forward' button press
+    // Handle 'move back' button press
     if (moveBack == 1) {
       moveBack = 0;
+      score-= level;          // decrement the score for every move back
       if (frogRow < 7) {
         // Correct for the skew in frog position created by the blockShift scrolling parameter
         if (frogRow == 3 && blockShiftL < 4) frogColumn++;
         if (frogRow == 2 && blockShiftR + blockShiftL < 5) frogColumn--;
         if (frogRow == 1 && blockShiftR + blockShiftL < 5) frogColumn++;
         frogRow++; 
-        frogMode = 1;             // mode 1 = forwards position              
+        frogMode = 4;             // mode 1 = forwards position              
       }
     }
 
@@ -647,10 +654,10 @@ void playFrogger(){
     // The frog has moved 
     if (watchDog == 0 && stopAnimate == 0) {
       watchDog = 1;               // set to something other than zero so this routine doesn't run again
-      // redraw the frog
-      drawFrog(frogMode,0);
       // redraw the screen
       drawGameScreen(frogMode);
+      // redraw the frog
+      drawFrog(frogMode,0);
       // make jump sound
       beep(30,400);
       beep(30,300);
@@ -696,7 +703,7 @@ void playFrogger(){
       while(!gb.update());
       delay(600);
       lives--;          // increment the score for every move
-      frogRightLimit++; // there's one less frog drawn on right so you can move a bit further across (if you really want to!)
+      //frogRightLimit++; // there's one less frog drawn on right so you can move a bit further across (if you really want to!)
       stopAnimate = 0;  // reset parameter
       drawLives();      // display number of lives left
       frogColumn = 8;   // reinitalise frog location
@@ -766,10 +773,10 @@ void initScreen(void) {
           if (row == 4) stepShift = 9;                            // shift up to the cars in the array - also theres no middle
           
           if (row > 0) {
-            grid[row][col] = 4+stepMode+stepShift;                // if you are on any row but the first - draw whatever is appropriate from the bitmaps
+            grid[row][col] = 5+stepMode+stepShift;                // if you are on any row but the first - draw whatever is appropriate from the bitmaps
           } else if (col >= crocStartColumn) {                    
-            grid[row][col] = 4+stepMode+stepShift;                // if you're on row zero (top row of logs) and you are above where crocs should be drawm, draw logs ...
-          } else grid[row][col] = 10+stepMode;                    // .. otherwise draw crocs
+            grid[row][col] = 5+stepMode+stepShift;                // if you're on row zero (top row of logs) and you are above where crocs should be drawm, draw logs ...
+          } else grid[row][col] = 11+stepMode;                    // .. otherwise draw crocs
           if (stepMode == 0) stepMode = 1;                        // we've drawn the left side now switch to central sections
           if (stepMode == 2) stepMode = 0;                        // we've drawn the end, now reset
         }
