@@ -1,6 +1,6 @@
 ## ATtiny Tetris Gold
 
-This code is designed to run on (very simple and cheap to build) custom hardware and you should find a schematic for the circuit in the folder ATtiny-Tetris-Gold. Because the voltages of the switches are important, it's good to insulate the back of the board from fingers if you can (I use hot melt glue but other methods would work - ideally put it in a case!)
+This code is designed to run on (very simple and cheap to build) custom hardware and you should find a schematic for the circuit in the folder ATtiny-Tetris-Gold. Because the voltages of the switches are important, it's good to insulate the back of the board from fingers if you can.
    
 Designed originally for the Attiny85 and optimised for the *#AttinyArcade* platform. The source code is less than 8KB and the sketch should run happily with less than 300 bytes of RAM. You can find out more about this platform from http://webboggles.com, buy kits to make it (or get instructions / schematics). This sketch includes some code from the #AttinyArcade games on that site, including interrupt code. 
 
@@ -29,9 +29,6 @@ In practice, this technique requires a reasonably well made and well insulated b
 ### Before the game starts:
 * Hold "DROP" BUTTON - Turns 'ghost' piece on and off
 * Hold "DROP" and "ROTATE" together - Turns 'challenge mode' on and off (which fills the screens with random stuff at the start of the game to make it more tricky!)
-
-*ATtiny Tetris Gold Edition* ;) is developed by Jarosław Mazurkiewicz [jm.iq.pl](https://jm.iq.pl/tetris).
-The previous version was developed by [Andy Jackson](https://github.com/andyhighnumber/Attiny-Arduino-Games).
 
 The code that does not fall under the licenses of sources listed below can be used non-commercially with or without attribution.
 This software is supplied without warranty of any kind.
