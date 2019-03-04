@@ -1,4 +1,4 @@
-/* 2015 / 2016 /2017
+/* 2015 / 2016 / 2017 / 2019
    Tetris for Attiny Arcade
    ========================
 
@@ -37,6 +37,10 @@
 
    The sleep code in this file is based on this blog post by Matthew Little:
    http://www.re-innovation.co.uk/web12/index.php/en/blog-75/306-sleep-modes-on-attiny85
+
+   Music, additional sounds and improvements by Jarosław Mazurkiewicz /jaromaz/
+   http://jm.iq.pl/tetris
+
 */
 
 // The custom font file is the only additional file you should need to compile this game
@@ -162,6 +166,18 @@ const byte brickLogo[] PROGMEM= {
   0x86, 0x86, 0x82, 0x82, 0x82, 0x80, 0x80, 0x80,
   0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80};
 
+const int music[][2] PROGMEM = {
+  {  752, 828 }, { 1004, 384 }, {  948, 384 }, {  845, 384 }, {  752,  190 },
+  {  845, 190 }, {  948, 384 }, { 1004, 384 }, { 1127, 808 }, {    0,   40 },
+  { 1127, 364 }, {  948, 384 }, {  752, 828 }, {  845, 384 }, {  948,  384 },
+  { 1004, 808 }, {    0,  40 }, { 1004, 380 }, {  948, 384 }, {  845,  828 },
+  {  752, 828 }, {  948, 828 }, { 1127, 768 }, {    0,  40 }, { 1127, 1676 },
+
+  {  845, 798 }, {    0,  40 }, {  845, 354 }, {  710, 384 }, {  562,  828 },
+  {  632, 384 }, {  710, 384 }, {  752, 808 }, {    0,  40 }, {  752,  364 },
+  {  948, 384 }, {  752, 828 }, {  845, 384 }, {  948, 384 }, { 1004,  808 },
+  {    0,  40 }, { 1004, 380 }, {  948, 384 }, {  845, 828 }, {  752,  828 },
+  {  948, 828 }, { 1127, 748 }, {    0,  14 }, {    0,  26 }, { 1127, 1696 }};
 
 // Function prototypes - generic ones I use in all games
 void beep(int,int);
@@ -230,7 +246,7 @@ int score = 0;                  // Score buffer
 int topScore = 0;               // High score buffer
 
 bool challengeMode = 0;         // Is the system in "Hard" mode?
-bool ghost = 1;                 // Is the ghost active?
+bool ghost = 0;                 // Is the ghost active?
 
 int level = 0;                  // Current level (increments once per cleared line)
 
@@ -430,11 +446,29 @@ void system_sleep() {
   ssd1306_send_command(0xAF);
 }
 
+void randomSeedEEPROM() {
+  uint16_t seed = eeprom_read_word( (uint16_t *) 0x03);
+  randomSeed(seed++);
+  eeprom_write_word( (uint16_t *) 0x03, seed & 0xFF);
+}
+
+void soundPlay(int note, int duration) {
+  if (note > 0) {
+    for (long c = 0; c < duration * 1000L; c += note * 2) {
+      PORTB |= (1 << 1);
+      delayMicroseconds(note);
+      PORTB &= ~(1 << 1);
+      delayMicroseconds(note);
+    }
+  } else { delay(duration); }
+}
+
 // Arduino stuff
 void setup() {
   DDRB = 0b00000010;    // set PB1 as output (for the speaker)
   PCMSK = 0b00000001;   // pin change mask: listen to portb bit 1
   GIMSK |= 0b00100000;  // enable PCINT interrupt
+  randomSeedEEPROM();   // initializing the pseudorandom number generator
   sei();                // enable all interrupts
   ssd1306_init();       // initialise the screen
 }
@@ -464,7 +498,8 @@ void loop() {
   while(digitalRead(0) == HIGH) {
     nowT = millis();
     if (nowT - startT > 2000) {
-      sChange = 1;     
+      sChange = 1;
+      beep(20, 956);
       if (digitalRead(2) == HIGH) {
         ssd1306_char_f8x8(2, 8, "MODE"); 
         if (challengeMode == 0) { 
@@ -491,9 +526,13 @@ void loop() {
   while(digitalRead(0) == HIGH);
   
   if (sChange == 0) {
-    delay(1600);
     ssd1306_char_f8x8(1, 20, "Andy-J"); 
-    delay(1500);
+    // playing the Tetris Theme
+    uint8_t sng = (ghost == 1) ? 50 : 25;
+    for (uint8_t i = 0; i < sng; i++) {
+      soundPlay(pgm_read_word_near(&(music[i][0])), pgm_read_word_near(&(music[i][1])));
+    }
+    // delay(1000);
     ssd1306_fillscreen(0x00);
     playTetris();
   }
@@ -725,6 +764,7 @@ void handleInput(void) {
 }
 
 void setNextBlock(byte pieceNumber) {
+  beep(20, 956);
   memset(nextBlockBuffer, 0, sizeof nextBlockBuffer); //clear buffer
   pieceNumber--;
   if (pieceNumber == 0) {
@@ -956,6 +996,7 @@ void playTetris(void) {
     drawPiece(ERASE);
     movePieceDown();
     drawPiece(DRAW);
+    beep(20, 568);
     drawGameScreen(currentPiece.column, currentPiece.column + 4, currentPiece.row, currentPiece.row+5, PARTIAL);         
     moveTime = millis();
     if (level * LEVELFACTOR > DROPDELAY) level = DROPDELAY / LEVELFACTOR;
