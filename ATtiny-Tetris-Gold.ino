@@ -1,45 +1,23 @@
-/* 2015 / 2016 /2017
-   Tetris for Attiny Arcade
-   ========================
+/*
+   ATtiny Tetris Gold - Multi Button
+                 music, additional sounds and improvements
 
-   When the game is running :
-   ==========================
-   Tap LEFT BUTTON - Moves the piece to the left (and wraps around at the left edge)
-   Hold LEFT BUTTON - Move the piece to the right
-   Tap RIGHT BUTTON - Rotates the piece
-   Hold RIGHT BUTTON - Place the piece
+   ===========================================================================
+   Andy Jackson, Anthony Russell, Tobozo, Neven Boyanov, Jarosław Mazurkiewicz
+   2015 / 2016 / 2017 / 2019
 
    Before the game starts:
-   =======================
-   Hold LEFT BUTTON - Turns 'ghost' piece on and off
-   Hold RIGHT and LEFT BUTTONS together - Turns 'challenge mode' on and off (which fills the screens with random stuff at the start of the game to make
-   it more tricky!)
+   ===========================================================================
+   Hold "DROP" BUTTON - Turns 'ghost' piece on and off
+   Hold "DROP" and "ROTATE" together - Turns 'challenge mode' on and off
 
-   _________________________________________________________________________________________________________________________________________________________
-   This version developed by Andy Jackson - Twitter @andyhighnumber - Tweet me if you have any problems getting this to compile or run.
-   The code that does not fall under the licenses of sources listed below can be used non-commercially with or without attribution.
+   The code that does not fall under the licenses of sources listed below
+   can be used non-commercially with or without attribution.
    This software is supplied without warranty of any kind.
-   
-   Designed for the Attiny85 and optimised for the #AttinyArcade platform. The source code is less than 8KB and the sketch
-   should run happily with less than 300 bytes of RAM. You can find out more about this platform from http://webboggles.com/, buy kits
-   to make it (or get instructions / schematics). This sketch includes some code from the #AttinyArcade games on that site, including interrupt code. 
 
-   This game started life as a port but is now essentially a clone of TinyTetris by Anthony Russell, with some additional features. There remain 
-   elements of that original codebase, although the vast majority of what's here has been rewritten from scratch (including the screen, text and number 
-   rendering code and much of the game engine) in order to optimise for memory, improve responsiveness and allow new features on the limited hardware 
-   (added features include Highscore (saved to EEPROM), optional Ghost (or Shadow) Piece, Interrupt Handling and Hard-Mode functionality).  
-   
-   Anthony's source can be found here: https://github.com/AJRussell/Tiny-Tetris and is highly recommended if you'd like a version
-   of Tetris to run on normal Arduino hardware. It has some lovely graphics by Tobozo (which sadly there's not space for on the Attiny85) and it's also
-   possible that some code by Tobozo has made it into this version. Tobozo's repository can be found here; https://github.com/tobozo and is well worth a look. 
-   There is an Instructables page relating to this project here: https://www.instructables.com/id/Tetris-Clone-With-OLED-SSD1306I2C-for-Arduino-Nano/ 
-        
-   This sketch is using the screen control and font functions written by Neven Boyanov for the http://tinusaur.wordpress.com/ project
-   Source code and font files available at: https://bitbucket.org/tinusaur/ssd1306xled - hacked about by Andy Jackson to make them 
-   render side-on for this game. All the necessary functions are in this file, there's no need to download any additional libraries to compile this game.
+   For more information please visit:
+   https://jm.iq.pl/tetris
 
-   The sleep code in this file is based on this blog post by Matthew Little:
-   http://www.re-innovation.co.uk/web12/index.php/en/blog-75/306-sleep-modes-on-attiny85
 */
 
 // The custom font file is the only additional file you should need to compile this game
@@ -126,8 +104,59 @@ static const byte  ghostout[16] PROGMEM = {
 static const byte startDecode[11] PROGMEM = {0,1,1,2,3,4,4,5,6,7,8};
 static const byte endDecode[11] PROGMEM =   {1,2,3,3,4,5,6,6,7,8,8};
 
+// The  logo on the opening screen - adapted from the original by Tobozo https://github.com/tobozo
+const byte brickLogo[] PROGMEM= {
+  0x01, 0x01, 0x01, 0x01, 0x81, 0x81, 0xC1, 0xE1, 
+  0xF1, 0xF1, 0x01, 0x11, 0xF1, 0xF1, 0xE1, 0xC1, 
+  0xC1, 0x81, 0x81, 0x01, 0x01, 0x01, 0x01, 0x01, 
+  0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 
+  0x01, 0x01, 0x01, 0x01, 0xFC, 0xFC, 0xFE, 0xFF, 
+  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00, 
+  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+  0xFF, 0xFE, 0xF8, 0x00, 0x00, 0x00, 0x00, 0x00, 
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0xFF, 0xFF, 0x7F, 0x3F, 0xBF, 0x9F, 0xCF, 0xEF, 
+  0xE7, 0xF7, 0xFB, 0xE0, 0x01, 0xFB, 0xF3, 0xF7, 
+  0xE7, 0xEF, 0xCF, 0xDF, 0xDF, 0xBF, 0xBF, 0x30, 
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
+  0x00, 0x00, 0x00, 0x00, 0x00, 0xFE, 0xFF, 0xFF, 
+  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+  0x00, 0x3F, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+  0xFF, 0xFF, 0xFF, 0xFF, 0xE0, 0x06, 0xFE, 0xFC, 
+  0xFC, 0xFC, 0xF8, 0xF8, 0xF0, 0xF0, 0xE0, 0x00, 
+  0x00, 0xFF, 0xFF, 0x7F, 0x7F, 0x3F, 0xBF, 0x9F, 
+  0xDF, 0xCF, 0xEF, 0xEF, 0xE4, 0x00, 0xF7, 0xE7, 
+  0xEF, 0xEF, 0xCF, 0xDF, 0xDF, 0x9F, 0xBF, 0xBF, 
+  0x3F, 0x00, 0x07, 0x7F, 0xFF, 0xFF, 0xFF, 0xFF,
+  0xFF, 0xFF, 0xFF, 0xF0, 0x00, 0xFC, 0xFE, 0xFE, 
+  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+  0xFF, 0x80, 0x07, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xC0, 0x0E, 
+  0x3E, 0x1E, 0x1C, 0x1D, 0x0D, 0x09, 0x03, 0x03, 
+  0x00, 0x07, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 
+  0xFF, 0xFF, 0xFF, 0x7F, 0x7F, 0x3F, 0x00, 0x3F, 
+  0x3F, 0x7F, 0x7F, 0x7F, 0x7F, 0x7F, 0xFF, 0xFF, 
+  0xFF, 0xFF, 0xFF, 0x80, 0x00, 0x00, 0x00, 0x00, 
+  0x00, 0x00, 0x00, 0x00, 0x80, 0x80, 0x83, 0x83, 
+  0x83, 0x89, 0x8D, 0x8D, 0x8C, 0x8E, 0x8E, 0x8E, 
+  0x8F, 0x8F, 0x9F, 0x8F, 0x8F, 0x8F, 0x8F, 0x87, 
+  0x86, 0x86, 0x82, 0x82, 0x82, 0x80, 0x80, 0x80,
+  0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80, 0x80};
+
+const int music[][2] PROGMEM = {
+  {  752, 828 }, { 1004, 384 }, {  948, 384 }, {  845, 384 }, {  752,  190 },
+  {  845, 190 }, {  948, 384 }, { 1004, 384 }, { 1127, 808 }, {    0,   40 },
+  { 1127, 364 }, {  948, 384 }, {  752, 828 }, {  845, 384 }, {  948,  384 },
+  { 1004, 808 }, {    0,  40 }, { 1004, 380 }, {  948, 384 }, {  845,  828 },
+  {  752, 828 }, {  948, 828 }, { 1127, 768 }, {    0,  40 }, { 1127, 1676 },
+
+  {  845, 798 }, {    0,  40 }, {  845, 354 }, {  710, 384 }, {  562,  828 },
+  {  632, 384 }, {  710, 384 }, {  752, 808 }, {    0,  40 }, {  752,  364 },
+  {  948, 384 }, {  752, 828 }, {  845, 384 }, {  948, 384 }, { 1004,  808 },
+  {    0,  40 }, { 1004, 380 }, {  948, 384 }, {  845, 828 }, {  752,  828 },
+  {  948, 828 }, { 1127, 748 }, {    0,  14 }, {    0,  26 }, { 1127, 1696 }};
+
 // Function prototypes - generic ones I use in all games
-void doNumber (int x, int y, int value);
 void beep(int,int);
 
 // Function prototypes - screen control modified from https://bitbucket.org/tinusaur/ssd1306xled
@@ -181,7 +210,7 @@ pieceSpace ghostPiece = {0};    // Current ghost piece
 unsigned long moveTime = 0;     // Baseline time for current move
 unsigned long keyTime = 0;      // Baseline time for current keypress
 
-byte keylock = 0;               // Holds the mode of the last keypress (for debounce and stuff)
+byte keyLock = 0;               // Holds the mode of the last keypress (for debounce and stuff)
 
 byte nextBlockBuffer[8][2];     // The little image of the next block 
 byte nextPiece = 0;             // The identity of the next piece
@@ -194,25 +223,64 @@ int score = 0;                  // Score buffer
 int topScore = 0;               // High score buffer
 
 bool challengeMode = 0;         // Is the system in "Hard" mode?
-bool ghost = 1;                 // Is the ghost active?
+bool ghost = 0;                 // Is the ghost active?
 
 int level = 0;                  // Current level (increments once per cleared line)
 
-void doNumber (int x, int y, int value) {
-  char temp[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  itoa(value, temp, 10);
-  ssd1306_char_f8x8(x, y, temp);
+
+
+/* 
+ * Interrupt handlers - to make sure every button press is caught promptly! 
+ */
+
+// PB0 pin button interrupt
+ISR(PCINT0_vect) { 
+  if (keyLock == 0) {
+    keyLock = 4; // Nothing complicated to do here - this is picked up in the handleInput() function 
+    }
 }
 
+/*
+ * This interrupt routine relies on having three buttons wired to pin 7 of the Attiny85 - all with a single pull-down resistor (10k) and 
+ *  - One that pulls-up to +Vcc (giving an analog reading of 1023)
+ *  - One that pulls-up via a 1k resistor (analog reading somewhere around 930ish)
+ *  - One that pulls-up via a 2.2 resistor (analog reading around 840)
+ * 
+ * The key point is that all three buttons provide a voltage that sends the pin to logic-high, thus triggering the interrupt
+ * (therefore you could add more buttons, as long as the voltage is always above the threshold that the Attiny85 would class
+ * as logic-high). 
+ * 
+ * In practice, this technique requires a reasonably well made and well insulated board - adding moisture to to board (via damp
+ * hands for example) would likely throw the voltages out enough that this technique would become unreliable.
+ * 
+ */
+ // PB2 pin button interrupt
+void playerIncTetris() { 
+  if (keyLock == 0) {
+    int ic = analogRead(1);
+    if (ic > 800 && ic < 855) {
+      keyLock = 1;
+    } else if (ic > 855 && ic < 970) {
+      keyLock = 2;
+    } else if (ic > 970 && ic < 1025) {
+      keyLock = 3;
+    }
+  }
+}
+
+// Beep function - originally from the games by www.webboggles.com 
 void beep(int bCount,int bDelay){
  for (int i = 0; i<=bCount; i++){digitalWrite(1,HIGH);for(int i2=0; i2<bDelay; i2++){__asm__("nop\n\t");}digitalWrite(1,LOW);for(int i2=0; i2<bDelay; i2++){__asm__("nop\n\t");}}
 }
 
+// SSD1306 screen drawing functions - adapted from https://bitbucket.org/tinusaur/ssd1306xled
 void ssd1306_char_f8x8(uint8_t x, uint8_t y, const char ch[]) {
   uint8_t c, i, j = 0;
 
   while (ch[j] != '\0')
   {
+    // These corrections allow for the fact that I've stripped out sections of the ASCII map from the font file
+    // If code space allows, then you could add some or all of them back in, but then you'd need to remove some or all of these lines.
     c = ch[j] - 32; // to space
     if (c > 0) c = c - 12; // to dash
     if (c > 15) c = c - 7; 
@@ -229,21 +297,6 @@ void ssd1306_char_f8x8(uint8_t x, uint8_t y, const char ch[]) {
   }
 }
 
-// Interrupt handlers - to make sure every button press is caught promptly!
-ISR(PCINT0_vect) { // PB0 pin button interrupt
-  if (keylock == 0) {
-    keylock = 1;
-    keyTime = millis();
-    }
-}
-void playerIncTetris(){ // PB2 pin button interrupt
-  if (keylock == 0) {
-    keylock = 2;
-    keyTime = millis();
-    }
-}
-
-// Screen control functions
 void ssd1306_init(void) {
   DDRB |= (1 << SSD1306_SDA); // Set port as output
   DDRB |= (1 << SSD1306_SCL); // Set port as output
@@ -370,26 +423,51 @@ void system_sleep() {
   ssd1306_send_command(0xAF);
 }
 
+void randomSeedEEPROM() {
+  uint16_t seed = eeprom_read_word( (uint16_t *) 0x03);
+  randomSeed(seed++);
+  eeprom_write_word( (uint16_t *) 0x03, seed & 0xFF);
+}
+
+void soundPlay(int note, int duration) {
+  if (note > 0) {
+    for (long c = 0; c < duration * 1000L; c += note * 2) {
+      PORTB |= (1 << 1);
+      delayMicroseconds(note);
+      PORTB &= ~(1 << 1);
+      delayMicroseconds(note);
+    }
+  } else { delay(duration); }
+}
+
 // Arduino stuff
 void setup() {
   DDRB = 0b00000010;    // set PB1 as output (for the speaker)
   PCMSK = 0b00000001;   // pin change mask: listen to portb bit 1
   GIMSK |= 0b00100000;  // enable PCINT interrupt
+  randomSeedEEPROM();   // initializing the pseudorandom number generator
   sei();                // enable all interrupts
   ssd1306_init();       // initialise the screen
-  keylock = 0;
 }
 
 void loop() {
   ssd1306_init();
   ssd1306_fillscreen(0x00);
 
-  ssd1306_char_f8x8(0, 88," ------ ");
-  ssd1306_char_f8x8(0, 80," TETRIS ");
-  ssd1306_char_f8x8(0, 72, " ------ ");
-  ssd1306_char_f8x8(0, 64, " Attiny ");
-  ssd1306_char_f8x8(0, 56, " Arcade ");
-  ssd1306_char_f8x8(0, 48, " ------ ");
+  drawScreenBorder();
+  ssd1306_char_f8x8(1, 64,"TETRIS");
+  ssd1306_char_f8x8(1, 48, "Attiny");
+  ssd1306_char_f8x8(1, 40, "Arcade");
+  drawScreenBorder();
+
+  for (byte lxn = 0; lxn < 8; lxn++) {
+    ssd1306_setpos(78, lxn); 
+    ssd1306_send_data_start(); 
+    for (byte lxn2 = 0; lxn2 < 36; lxn2++) {
+      ssd1306_send_byte(pgm_read_byte(&brickLogo[36*lxn+lxn2]));  
+    }
+    ssd1306_send_data_stop(); 
+  }
 
   long startT = millis();
   long nowT =0;
@@ -397,33 +475,40 @@ void loop() {
   while(digitalRead(0) == HIGH) {
     nowT = millis();
     if (nowT - startT > 2000) {
-      sChange = 1;     
+      sChange = 1;
+      beep(20, 956);
       if (digitalRead(2) == HIGH) {
+        ssd1306_char_f8x8(2, 8, "MODE"); 
         if (challengeMode == 0) { 
           challengeMode = 1; 
-          ssd1306_char_f8x8(0, 16, "  HARD "); 
-          ssd1306_char_f8x8(0, 8, "  MODE "); 
+          ssd1306_char_f8x8(2, 16, "HARD"); 
         } else { 
           challengeMode = 0; 
-          ssd1306_char_f8x8(0, 16, " NORMAL"); 
-          ssd1306_char_f8x8(0, 8, "  MODE "); 
+          ssd1306_char_f8x8(1, 16, "NORMAL"); 
         }
-      } else if (ghost == 0) { 
-        ghost = 1; 
-        ssd1306_char_f8x8(0, 16, " GHOST "); 
-        ssd1306_char_f8x8(0, 8, "  ON   "); 
-      } else { 
-        ghost = 0; 
-        ssd1306_char_f8x8(0, 16, " GHOST "); 
-        ssd1306_char_f8x8(0, 8, "  OFF  "); 
-      }    
+      } else {
+        ssd1306_char_f8x8(1, 16, "GHOST"); 
+        if (ghost == 0) { 
+          ghost = 1; 
+          ssd1306_char_f8x8(2, 8, "ON"); 
+        } else { 
+          ghost = 0; 
+          ssd1306_char_f8x8(2, 8, "OFF"); 
+        }    
+      }
       break;
     }
     if (sChange == 1) break;
   }  
   while(digitalRead(0) == HIGH);
+  
   if (sChange == 0) {
-    delay(2500);
+    ssd1306_char_f8x8(2, 21, "GOLD"); 
+    // playing the Tetris Theme
+    uint8_t sng = (ghost == 1) ? 50 : 25;
+    for (uint8_t i = 0; i < sng; i++) {
+      soundPlay(pgm_read_word_near(&(music[i][0])), pgm_read_word_near(&(music[i][1])));
+    }
     ssd1306_fillscreen(0x00);
     playTetris();
   }
@@ -431,6 +516,9 @@ void loop() {
   system_sleep();
 }
 
+/*
+ *  These functional allow optimal storing of the array of Tetris and Ghost blocks by using a 10x3 array of bytes and extracting the relevant bit through shifting and masking
+ */
 
 byte readBlockArray(byte x, byte y) {
     if (y < 8) {
@@ -530,7 +618,7 @@ bool movePieceDown(void) {
       }
       if (rowFull) {
         totalRows++;
-        for (int i = 800; i>200; i = i - 200)beep(30,i); // happy sound
+        for (int i = 800; i>200; i = i - 200) beep(30,i); // happy sound
         for (byte col = 0; col < HORIZ; col++) writeblockArray(col,row,0); // write zeros across this whole row
         drawGameScreen(0,HORIZ-1,row,row+1,PARTIAL); // draw the row we're removing (for animation)
         delay(30); // delay slightly to make the deletion of rows visible
@@ -548,6 +636,7 @@ bool movePieceDown(void) {
       case 4:   score += 800; 
     }
     drawGameScreen(0,10, 0,VERTDRAW,FULL); 
+    displayScore(score, 0,117,0);
     loadPiece(nextPiece, STARTY, STARTX);
     if (checkCollision()) {
       stopAnimate = true;
@@ -571,27 +660,8 @@ void movePieceLeft(void) {
 
   response = checkCollision();
 
-  if (response == 1) {
+  if (checkCollision()) {
     currentPiece = oldPiece; // back to where it was
-  } else if (response == 2) {
-    int wide = 0;
-    for (byte i = 0;i<4;i++) {
-      if (currentPiece.blocks[3][i]) wide = 1;
-    }
-    boolean narrow = true;
-    for (byte i = 0;i<4;i++) {
-      if (currentPiece.blocks[2][i]) narrow = false;
-    }
-    if (narrow) wide = -1;
-    currentPiece.column = 7-wide;
-    response = checkCollision(); // Check again - does wrapping around cause a collision?
-    if (response == 1) {
-      currentPiece = oldPiece; // back to where it was
-    } else {
-      drawGhost(ERASE);
-      if (createGhost()) drawGhost(DRAW);
-      drawGameScreen(0,10,0,VERTDRAW,FULL); 
-    }
   } else {
     drawGhost(ERASE);
     if (createGhost()) drawGhost(DRAW);
@@ -635,8 +705,28 @@ byte checkCollision(void) {
 }
 
 void handleInput(void) {
-  if (digitalRead(2) == HIGH && keylock == 2 && millis() - keyTime > 300) {
-    while (digitalRead(2) == HIGH) {
+  if (digitalRead(0) == LOW && digitalRead(2) == LOW) {
+    if (keyLock == 1) {
+      drawPiece(ERASE);
+      movePieceLeft();
+      drawPiece(DRAW);
+      drawGameScreen(currentPiece.column, currentPiece.column + 5, currentPiece.row, currentPiece.row+4, PARTIAL);         
+    } else if (keyLock == 2) {
+      drawPiece(ERASE);
+      movePieceRight();
+      drawPiece(DRAW);
+      drawGameScreen(currentPiece.column-1, currentPiece.column + 4, currentPiece.row, currentPiece.row+4,PARTIAL);         
+    } else if (keyLock == 3) {
+      drawPiece(ERASE);
+      rotatePiece();
+      drawPiece(DRAW);
+      drawGameScreen(currentPiece.column, currentPiece.column + 4, currentPiece.row, currentPiece.row+4,PARTIAL);         
+    }
+    keyLock = 0;      
+  }
+
+  if (keyLock == 4) {
+    while (digitalRead(0) == HIGH) {
       drawPiece(ERASE);
       movePieceDown();
       drawPiece(DRAW);
@@ -644,36 +734,13 @@ void handleInput(void) {
       delay(10);
       if (stopAnimate) return;
     }
-    keylock = 0;
-  }
-  
-  if (digitalRead(0) == HIGH && (keylock == 1 || keylock == 3) && millis() - keyTime > 200) {
-    drawPiece(ERASE);
-    movePieceRight();
-    drawPiece(DRAW);
-    drawGameScreen(currentPiece.column-1, currentPiece.column + 4, currentPiece.row, currentPiece.row+4,PARTIAL);         
-    keyTime = millis() + 100;
-    keylock = 3;
-  }
-
-  if (digitalRead(0) == LOW && digitalRead(2) == LOW) {
-    if (keylock == 2  && millis() - keyTime < 300) {
-      drawPiece(ERASE);
-      rotatePiece();
-      drawPiece(DRAW);
-      drawGameScreen(currentPiece.column, currentPiece.column + 4, currentPiece.row, currentPiece.row+4,PARTIAL);         
-    } else if (keylock == 1) {
-    drawPiece(ERASE);
-    movePieceLeft();
-    drawPiece(DRAW);
-    drawGameScreen(currentPiece.column, currentPiece.column + 5, currentPiece.row, currentPiece.row+4, PARTIAL);         
-    }
-    keylock = 0;
+    keyLock = 0;
   }
   delay(30);
 }
 
 void setNextBlock(byte pieceNumber) {
+  beep(20, 956);
   memset(nextBlockBuffer, 0, sizeof nextBlockBuffer); //clear buffer
   pieceNumber--;
   if (pieceNumber == 0) {
@@ -709,12 +776,12 @@ void drawScreenBorder(void) {
     ssd1306_setpos(0, r);
     ssd1306_send_data_start();
     ssd1306_send_byte(0xFF);        
-    for (byte c = 1; c < 126; c++) {
-        ssd1306_send_byte(B00000000);  
-    }    
-    ssd1306_send_byte(0xFF);        
-    }
     ssd1306_send_data_stop();  
+    ssd1306_setpos(127, r);
+    ssd1306_send_data_start();
+    ssd1306_send_byte(0xFF);        
+    ssd1306_send_data_stop();  
+    }
 
     ssd1306_setpos(0, 7);
     ssd1306_send_data_start();
@@ -761,7 +828,6 @@ void drawGameScreen(int startCol, int endCol, int startRow, int endRow, byte mod
 void drawScreen(int startCol, int endCol, int startRow, int endRow, byte mode) {
   byte temp = 0;
   byte separator = 0;
-  byte scoreOut[6];
   byte reader = 0;
   byte blockReader = 0;
   
@@ -773,13 +839,6 @@ void drawScreen(int startCol, int endCol, int startRow, int endRow, byte mode) {
   byte startScreenCol = pgm_read_byte(&startDecode[startCol]);
   byte endScreenCol = pgm_read_byte(&endDecode[endCol]);
   
-  scoreOut[5] = (score % 10);
-  scoreOut[4] = ((score / 10) % 10);
-  scoreOut[3] = ((score / 100) % 10);
-  scoreOut[2] = ((score / 1000) % 10);
-  scoreOut[1] = ((score / 10000) % 10);
-  scoreOut[0] = ((score / 100000) % 10);
-
     for (byte col = startScreenCol; col < endScreenCol; col++) {
     if (col < 4) reader = col; else if (col < 7) reader = col+1; else reader = col + 2;
     blockReader = 2 * col;
@@ -817,7 +876,7 @@ void drawScreen(int startCol, int endCol, int startRow, int endRow, byte mode) {
       }
       ssd1306_send_byte(separator); // between blocks - same one as we used at the start
     }    
-    if (mode == FULL) if (col < 6) for (byte numline = 0; numline < 8; numline++) ssd1306_send_byte(pgm_read_byte(&font[scoreOut[col]+4][7-numline])); else for (byte blockline = 0; blockline < 8; blockline++) ssd1306_send_byte(nextBlockBuffer[blockline][col-6]);
+    if (mode == FULL) if (col > 5) for (byte blockline = 0; blockline < 8; blockline++) ssd1306_send_byte(nextBlockBuffer[blockline][col-6]);
     ssd1306_send_data_stop(); 
   }
 }
@@ -878,12 +937,13 @@ void drawGhost(byte action) {
 void playTetris(void) {
   stopAnimate = 0;
   score = 0;
+  keyLock = 0;
 
   fillGrid(0, NORMAL);
   fillGrid(0, GHOST);
 
   // Attach the interrupt to read key 2
-  attachInterrupt(0,playerIncTetris,RISING);
+    attachInterrupt(0,playerIncTetris,RISING);
 
   loadPiece(random(1, 8), STARTY, STARTX);
   drawPiece(DRAW);
@@ -906,11 +966,13 @@ void playTetris(void) {
   level = STARTLEVEL;
   
   drawGameScreen(0,10,0,VERTDRAW, FULL); 
-
+  displayScore(score, 0,117,0);
+  
   while (stopAnimate == 0) {
     drawPiece(ERASE);
     movePieceDown();
     drawPiece(DRAW);
+    beep(20, 568);
     drawGameScreen(currentPiece.column, currentPiece.column + 4, currentPiece.row, currentPiece.row+5, PARTIAL);         
     moveTime = millis();
     if (level * LEVELFACTOR > DROPDELAY) level = DROPDELAY / LEVELFACTOR;
