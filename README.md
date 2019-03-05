@@ -15,6 +15,9 @@ Source code and font files available at: https://bitbucket.org/tinusaur/ssd1306x
 The sleep code in this file is based on this blog post by Matthew Little:
 http://www.re-innovation.co.uk/web12/index.php/en/blog-75/306-sleep-modes-on-attiny85
 
+Music, additional sounds and improvements by Jarosław Mazurkiewicz /jaromaz/
+http://jm.iq.pl/tetris
+
 ### Tetris Multi Button
 
 This interrupt routine relies on having three buttons wired to pin 7 of the Attiny85 - all with a single pull-down resistor (10k) and 
