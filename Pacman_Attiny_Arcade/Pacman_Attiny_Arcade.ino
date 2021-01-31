@@ -1,11 +1,11 @@
-/*  2015 / 2016 / 2017 /2020
+/*  2015 / 2016 / 2017
     Pacman for Attiny Arcade by Andy Jackson - Twitter @andyhighnumber
 
     Inspired by http://webboggles.com/ and includes some code from the #AttinyArcade games on that site
     The code that does not fall under the licenses of sources listed below can be used non commercially with attribution.
     This software is supplied without warranty of any kind.
 
- *  **** BEFORE USE, BURN THE BOOTLOADER ON THE ATTINY85 WITH 16Mhz Internal Clock *
+ *  **** BEFORE USE, BURN THE BOOTLOADER ON THE ATTINY85 WITH 16Mhz Internal Clock and note the specific ATtiny libraries required for this sketch (see below) *
 
     Controls:
     On the standard AttinyArcade:
@@ -864,7 +864,7 @@ void moveGhosts(void) {
 
       // Slow the ghosts down if powerup mode is active
       gCount++;
-      if (gCount == 6) {
+      if (gCount >= 5) {
         if(powerUp) travelDirection = 0; 
         if (powerCounter > POWER_LENGTH - 50) flipFlop = !flipFlop;
         gCount = 0;
@@ -935,7 +935,7 @@ void pacDie(void) {
 
 void movePacman(void) {
   pCount++;
-  if (pCount == 3) {
+  if (pCount >= 3) {
     if (mouth == 0) {
       mouth = 1;
       beep(20, 400 + (powerUp * 100));
@@ -952,6 +952,8 @@ void movePacman(void) {
       powerUp = 0;
       powerCounter = 0;
       flipFlop = 0;
+      gCount = 0;
+      pCount = 0;
     }
   }
 
@@ -1098,4 +1100,3 @@ void playPacman() {
     displayScreen();
   }
 }
-
